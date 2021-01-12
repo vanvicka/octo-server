@@ -1,9 +1,15 @@
-const server = require('http').createServer()
-const io = require('socket.io')(server)
+var express = require('express');
+var app = require('express')();
+var server = require('http').Server(app);
+var io = require('socket.io')(server)
 
 io.on('connection', function (client) {
 
-  console.log('client connect...', client.id);
+  
+  console.log(client.id, 'joined');
+  client.on('/test', function (msg) {
+      console.log(msg);
+  });
 
   client.on('typing', function name(data) {
     console.log(data);
@@ -12,7 +18,12 @@ io.on('connection', function (client) {
 
   client.on('message', function name(data) {
     console.log(data);
-    io.emit('message', data)
+    io.sockets.emit('message', data)
+  })
+
+  client.on('request', function name(data) {
+    console.log(data);
+    io.sockets.emit('request', data)
   })
 
   client.on('location', function name(data) {
@@ -34,7 +45,7 @@ io.on('connection', function (client) {
   })
 })
 
-var server_port = process.env.PORT || 3000;
+var server_port = process.env.PORT || 8080;
 server.listen(server_port, function (err) {
   if (err) throw err
   console.log('Listening on port %d', server_port);

@@ -21,9 +21,20 @@ io.on('connection', function (client) {
     io.sockets.emit('message', data)
   })
 
-  client.on('request', function name(data) {
+  client.on('request', function request(data) {
     console.log(data);
-    io.sockets.emit('request', data)
+    io.sockets.emit('request', data);
+    
+  })
+
+  client.on('response', function name(data) {
+    console.log(data);
+    console.log(data["id"]);
+    // client.removeListener('request', {});
+
+    client.to(data["id"]).emit('response', data);
+    client.broadcast.emit("response", data["status"]);
+    
   })
 
   client.on('location', function name(data) {
